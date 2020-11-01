@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <arpa/inet.h>
 #include <ctype.h>
+#include <string.h>
+
  
 #define EHTER_ADDR_LEN 6
  
@@ -138,15 +140,16 @@ void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *pa
    int i;
  
    printf("Got a packet\n");
+   //make the ethernet header
    ether =(struct ethheader *)packet;
  
    if(ntohs(ether->ether_type) == 0x800)
-   {
+   {//ip header offset 
        ip = (struct ipheader *)(packet + sizeof(struct ethheader));
       
        printf("    From: %s\n",inet_ntoa(ip->ip_src));
        printf("    To: %s\n", inet_ntoa(ip->ip_dst));
- 
+      //determine the protocol 
        switch(ip->iph_protocol){
            case IPPROTO_TCP:
                printf("    Protocol is TCP\n");
@@ -159,7 +162,7 @@ void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *pa
                printf("    Protocol other\n");
        }
    
- 
+   //tcp offset
    tcp = (struct sniff_tcp*)(packet + sizeof(struct ethheader) + sizeof(struct ipheader));
  
    printf("    Source Port%d\n",ntohs(tcp->th_sport));
@@ -169,15 +172,21 @@ void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *pa
    
    size_payload = ntohs(ip->ip_len) - (sizeof(struct ipheader) + sizeof(struct sniff_tcp));
    
-   if(size_payload >0){
-       printf("  payload (%d bytes):\n", size_payload);
-       print_payload(payload, size_payload);
-        
-       }
-   }
- 
-   return;
- 
+    if(size_payload > 0){
+        printf("  Payload (%d bytes):\n",size_payload);
+            // ascii (if printable) 
+        const u_char *ch = payload;
+        for(int i=0;i<size_payload;i++){
+            if(isprint(*ch))
+                printf("%c",*ch);
+            else
+                printf(".");
+            ch++;
+        }
+    }
+   
+    return;
+}
 }
  
  
