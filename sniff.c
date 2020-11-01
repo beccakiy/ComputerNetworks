@@ -78,7 +78,7 @@ void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *pa
    int size_ip;
    int size_tcp;
 
-   int i;
+
 
  
    printf("Got a packet, packet number: %d\n", packetCounter);
@@ -110,7 +110,7 @@ void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *pa
       printf("    Protocol other\n");
       return;
    }
-
+   printf("print if you made it here")
    //tcp offset
    tcp = (struct sniff_tcp*)(packet + SIZE_ETHERNET + size_ip);
    size_tcp = TH_OFF(tcp)*4;
