@@ -68,7 +68,7 @@ struct sniff_tcp {
 };
 
 void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *packet){
-  
+   static int packetCounter =1;
    const struct ethheader *ether;
    const struct ipheader *ip;
    const struct sniff_tcp *tcp;
@@ -79,7 +79,7 @@ void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *pa
    int size_tcp;
 
    int i;
-   int packetCounter;
+
  
    printf("Got a packet, packet number: %d\n", packetCounter);
    packetCounter++;
