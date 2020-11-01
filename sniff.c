@@ -170,5 +170,5 @@ int main(){
  
 // Note: don’t forget to add "-lpcap" to the compilation command.
 // For example: gcc -o sniff sniff.c -lpcap
- //recent update 1
+ //recent update 2
 
