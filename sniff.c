@@ -34,7 +34,7 @@ struct ipheader{
    #define IP_MF 0x2000       
    #define IP_OFFMASK 0x1fff  
    u_char  ip_ttl;    
-   u_char  iph_protocol;      
+   u_char  ip_p;      
    u_short ip_sum;    
    struct  in_addr ip_src,ip_dst;
 };
@@ -93,13 +93,13 @@ void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *pa
    printf("    To: %s\n", inet_ntoa(ip->ip_dst));
 
    //determine the protocol 
-   switch(ip->iph_protocol){
+   switch(ip->ip_p){
    case IPPROTO_TCP:
       printf("    Protocol is TCP\n");
-      return;
+      break;
    case IPPROTO_UDP:
       printf("    Protocol is UDP\n");
-      return;
+      break;
    case IPPROTO_ICMP:
       printf("    Protocol is ICMP\n");
       return;
