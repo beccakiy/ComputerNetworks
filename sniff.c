@@ -64,71 +64,7 @@ struct sniff_tcp {
    u_short th_sum;    
    u_short th_urp;    
 };
-void
-print_hex_ascii_line(const u_char *payload, int len, int offset){
-		int i;
-		int gap;
-		const u_char *ch;
 
-		printf("%05d	",offset);
-
-		ch = payload;
-		for(i = 0; i<len; i++){
-			printf("%02x", *ch);
-			ch++;
-			if(i ==7)
-				printf(" ");
-		}
-
-
-		printf("	");
-
-		ch = payload;
-		for(i = 0; i<len ; i++){
-			if(isprint(*ch))
-				printf("%c", *ch);
-			else 
-				printf(".");
-			ch++;
-		}
-		
-		printf("\n");
-return;
-
-}
-void
-print_payload(const u_char *payload, int len)
-{
-		int len_rem = len;
-		int line_width = 16;
-		int line_len;
-		int offset = 0;
-		const u_char *ch = payload;
-
-		if(len<=0)
-			return;
-
-		if(len<=line_width){
-			print_hex_ascii_line(ch, len, offset);
-			return;
-		}
-
-		for ( ;; ){
-			line_len = line_width % len_rem;
-			print_hex_ascii_line(ch, line_len, offset);
-
-			len_rem= len_rem - line_len;
-			ch = ch + line_len;
-			offset = offset + line_width;
-
-			if(len_rem <= line_width){
-				print_hex_ascii_line(ch, len_rem, offset);
-				break;
-			}
-		}
-
-return;
-}
 void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *packet){
   
    const struct ethheader *ether;
