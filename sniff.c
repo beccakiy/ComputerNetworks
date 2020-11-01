@@ -79,8 +79,10 @@ void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *pa
    int size_tcp;
 
    int i;
+   int packetCounter;
  
-   printf("Got a packet\n");
+   printf("Got a packet\n", packetCounter);
+   packetCounter++;
    //make the ethernet header
    ether =(struct ethheader *)(packet);
    //define the ip header offset 
@@ -117,7 +119,7 @@ void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *pa
  
    payload = (u_char *)(packet+SIZE_ETHERNET+size_ip+size_tcp);
    
-   size_payload = ntohs(ip->ip_len) - (sizeof(struct ipheader) + sizeof(struct sniff_tcp));
+   size_payload = ntohs(ip->ip_len) - (size_ip + size_tcp);
    
     if(size_payload > 0){
         printf("  Payload (%d bytes):\n",size_payload);
