@@ -2,14 +2,10 @@
 #include <stdio.h>
 #include <arpa/inet.h>
 #include <ctype.h>
-#include <string.h>
-
  
 #define EHTER_ADDR_LEN 6
  
-
-#define SIZE_ETHERNET 14
-
+ 
  
 /* This function will be invoked by pcap for each captured packet.
 We can process each packet inside the function. */
@@ -34,7 +30,7 @@ struct ipheader{
    #define IP_MF 0x2000       
    #define IP_OFFMASK 0x1fff  
    u_char  ip_ttl;    
-   u_char  ip_p;      
+   u_char  iph_protocol;      
    u_short ip_sum;    
    struct  in_addr ip_src,ip_dst;
 };
@@ -68,60 +64,50 @@ struct sniff_tcp {
 };
 
 void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *packet){
-   static int packetCounter =1;
+  
    const struct ethheader *ether;
    const struct ipheader *ip;
    const struct sniff_tcp *tcp;
    const char *payload;
  
    int size_payload;
-   int size_ip;
-   int size_tcp;
-
-
-
+   int i;
  
-   printf("\nGot a packet, packet number: %d\n", packetCounter);
-   packetCounter++;
-   //make the ethernet header
-   ether =(struct ethheader *)(packet);
-   //define the ip header offset 
-   ip = (struct ipheader *)(packet + SIZE_ETHERNET);
-   size_ip = IP_HL(ip)*4;
-   //print src and dst IP address
-   printf("    From: %s\n",inet_ntoa(ip->ip_src));
-   printf("    To: %s\n", inet_ntoa(ip->ip_dst));
-
-   //determine the protocol 
-   switch(ip->ip_p){
-   case IPPROTO_TCP:
-      printf("    Protocol is TCP\n");
-      break;
-   case IPPROTO_UDP:
-      printf("    Protocol is UDP\n");
-      break;
-   case IPPROTO_ICMP:
-      printf("    Protocol is ICMP\n");
-      return;
-   case IPPROTO_IP:
-      printf("Protocol: IP\n");
-      return;
-   default:
-      printf("    Protocol other\n");
-      return;
-   }
-  
-   //tcp offset
-   tcp = (struct sniff_tcp*)(packet + SIZE_ETHERNET + size_ip);
-   size_tcp = TH_OFF(tcp)*4;
-
-   printf("    Source Port%d\n",ntohs(tcp->th_sport));
-   printf("    Dst port: %d\n", ntohs(tcp->th_dport));
+   printf("Got a packet\n");
+   ether =(struct ethheader *)packet;
  
-   payload = (u_char *)(packet+SIZE_ETHERNET+size_ip+size_tcp);
+   if(ntohs(ether->ether_type) == 0x800)
+   {
+       ip = (struct ipheader *)(packet + sizeof(struct ethheader));
+      
+       printf("    From: %s\n",inet_ntoa(ip->ip_src));
+       printf("    To: %s\n", inet_ntoa(ip->ip_dst));
+ 
+       switch(ip->iph_protocol){
+           case IPPROTO_TCP:
+               printf("    Protocol is TCP\n");
+               break;
+           case IPPROTO_UDP:
+               printf("    Protocol is UDP\n");
+               break;
+           case IPPROTO_ICMP:
+               printf("    Protocol is ICMP\n");
+               return;
+           default:
+               printf("    Protocol other\n");
+               return;
+       }
    
-   size_payload = ntohs(ip->ip_len) - (size_ip + size_tcp);
-
+ 
+   tcp = (struct sniff_tcp*)(packet + sizeof(struct ethheader) + sizeof(struct ipheader));
+ 
+   printf("    Source Port%d\n",ntohs(tcp->th_sport));
+   printf("   Dst port: %d\n", ntohs(tcp->th_dport));
+ 
+   payload = (u_char *)packet + sizeof(struct ethheader) + sizeof(struct ipheader) +sizeof(struct sniff_tcp);
+   
+   size_payload = ntohs(ip->ip_len) - (sizeof(struct ipheader) + sizeof(struct sniff_tcp));
+   
    if(size_payload > 0){
       printf("  Payload (%d bytes):\n",size_payload);
 
@@ -134,11 +120,10 @@ void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *pa
          ch++;
       }
    }
-   
-
+ 
    return;
+ 
 }
-
  
  
  
@@ -146,10 +131,9 @@ int main(){
    pcap_t *handle;
    char errbuf[PCAP_ERRBUF_SIZE];
    struct bpf_program fp;
-   char filter_exp[] = "dst port 23";
+   char filter_exp[] = "proto \\TCP and (host 10.0.2.5 and 10.0.2.4) and dst port range 10-100";
    bpf_u_int32 net;
  
-   printf("Update 4");
  
    // Step 1: Open live pcap session on NIC with name eth3
    //         Students needs to change "eth3" to the name
@@ -173,5 +157,5 @@ int main(){
  
 // Note: don’t forget to add "-lpcap" to the compilation command.
 // For example: gcc -o sniff sniff.c -lpcap
- //recent update 4
+ 
 
