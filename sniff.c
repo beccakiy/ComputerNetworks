@@ -81,7 +81,7 @@ void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *pa
 
 
  
-   printf("Got a packet, packet number: %d\n", packetCounter);
+   printf("\nGot a packet, packet number: %d\n", packetCounter);
    packetCounter++;
    //make the ethernet header
    ether =(struct ethheader *)(packet);
@@ -128,9 +128,9 @@ void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *pa
       const u_char *ch = payload;
       for(int i=0;i<size_payload;i++){
          if(isprint(*ch))
-               printf("%c",*ch);
+            printf("%c",*ch);
          else
-               printf(".");
+            printf(".");
          ch++;
       }
    }
