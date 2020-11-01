@@ -4,7 +4,7 @@
 #include <ctype.h>
  
 #define EHTER_ADDR_LEN 6
- 
+#define SIZE_ETHERNET 14
  
  
 /* This function will be invoked by pcap for each captured packet.
@@ -72,11 +72,14 @@ void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *pa
  
    int size_payload;
    int i;
+   int size_ip;
  
-   printf("Got a packet\n");
+   printf("\nGot a packet\n");
    ether =(struct ethheader *)packet;
 
-   ip = (struct ipheader *)(packet + sizeof(struct ethheader));
+   ip = (struct ipheader *)(packet + SIZE_ETHERNET);
+   size_ip = IP_HL(ip)*4;
+   
       
    printf("    From: %s\n",inet_ntoa(ip->ip_src));
    printf("    To: %s\n", inet_ntoa(ip->ip_dst));
@@ -100,7 +103,7 @@ void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *pa
    tcp = (struct sniff_tcp*)(packet + sizeof(struct ethheader) + sizeof(struct ipheader));
  
    printf("    Source Port%d\n",ntohs(tcp->th_sport));
-   printf("   Dst port: %d\n", ntohs(tcp->th_dport));
+   printf("    Dst port: %d\n", ntohs(tcp->th_dport));
  
    payload = (u_char *)packet + sizeof(struct ethheader) + sizeof(struct ipheader) +sizeof(struct sniff_tcp);
    
