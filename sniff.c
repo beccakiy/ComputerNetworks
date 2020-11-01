@@ -121,7 +121,7 @@ void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *pa
    payload = (u_char *)(packet+SIZE_ETHERNET+size_ip+size_tcp);
    
    size_payload = ntohs(ip->ip_len) - (size_ip + size_tcp);
-   printf("    (%d bytes):\n, size_payload");
+
    if(size_payload > 0){
       printf("  Payload (%d bytes):\n",size_payload);
 
