@@ -97,7 +97,7 @@ void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *pa
                printf("    Protocol other\n");
                return;
        }
-   
+   }
  
    tcp = (struct sniff_tcp*)(packet + sizeof(struct ethheader) + sizeof(struct ipheader));
  
