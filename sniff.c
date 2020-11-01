@@ -81,7 +81,7 @@ void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *pa
    int i;
    int packetCounter;
  
-   printf("Got a packet\n", packetCounter);
+   printf("Got a packet, packet number: %d\n", packetCounter);
    packetCounter++;
    //make the ethernet header
    ether =(struct ethheader *)(packet);
@@ -91,24 +91,25 @@ void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *pa
    //print src and dst IP address
    printf("    From: %s\n",inet_ntoa(ip->ip_src));
    printf("    To: %s\n", inet_ntoa(ip->ip_dst));
+
    //determine the protocol 
-      switch(ip->iph_protocol){
-         case IPPROTO_TCP:
-            printf("    Protocol is TCP\n");
-            return;
-         case IPPROTO_UDP:
-            printf("    Protocol is UDP\n");
-            return;
-         case IPPROTO_ICMP:
-            printf("    Protocol is ICMP\n");
-            return;
-         case IPPROTO_IP:
-            printf("Protocol: IP\n");
-            return;
-         default:
-            printf("    Protocol other\n");
-            return;
-      }
+   switch(ip->iph_protocol){
+   case IPPROTO_TCP:
+      printf("    Protocol is TCP\n");
+      return;
+   case IPPROTO_UDP:
+      printf("    Protocol is UDP\n");
+      return;
+   case IPPROTO_ICMP:
+      printf("    Protocol is ICMP\n");
+      return;
+   case IPPROTO_IP:
+      printf("Protocol: IP\n");
+      return;
+   default:
+      printf("    Protocol other\n");
+      return;
+   }
 
    //tcp offset
    tcp = (struct sniff_tcp*)(packet + SIZE_ETHERNET + size_ip);
@@ -147,6 +148,7 @@ int main(){
    char filter_exp[] = "dst port 23";
    bpf_u_int32 net;
  
+   printf("Update 4");
  
    // Step 1: Open live pcap session on NIC with name eth3
    //         Students needs to change "eth3" to the name
@@ -170,5 +172,5 @@ int main(){
  
 // Note: don’t forget to add "-lpcap" to the compilation command.
 // For example: gcc -o sniff sniff.c -lpcap
- //recent update 2
+ //recent update 4
 
