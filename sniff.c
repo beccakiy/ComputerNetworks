@@ -73,6 +73,7 @@ void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *pa
    int size_payload;
    int i;
    int size_ip;
+   int size_tcp;
  
    printf("\nGot a packet\n");
    ether =(struct ethheader *)packet;
@@ -100,14 +101,15 @@ void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *pa
    }
    
  
-   tcp = (struct sniff_tcp*)(packet + sizeof(struct ethheader) + sizeof(struct ipheader));
+   tcp = (struct sniff_tcp*)(packet + SIZE_ETHERNET + size_ip);
+   size_tcp = TH_OFF(tcp)*4;
  
    printf("    Source Port%d\n",ntohs(tcp->th_sport));
    printf("    Dst port: %d\n", ntohs(tcp->th_dport));
  
-   payload = (u_char *)packet + sizeof(struct ethheader) + sizeof(struct ipheader) +sizeof(struct sniff_tcp);
+   payload = (u_char *)(packet+SIZE_ETHERNET + size_ip + size_tcp);
    
-   size_payload = ntohs(ip->ip_len) - (sizeof(struct ipheader) + sizeof(struct sniff_tcp));
+   size_payload = ntohs(ip->ip_len) - (size_ip + size_tcp);
    
    if(size_payload > 0){
       printf("  Payload (%d bytes):\n",size_payload);
