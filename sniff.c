@@ -4,6 +4,8 @@
 #include <ctype.h>
  
 #define EHTER_ADDR_LEN 6
+#define SIZE_ETHERNET 14
+
  
  
  
@@ -71,12 +73,15 @@ void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *pa
    const char *payload;
  
    int size_payload;
+   int size_ip;
+   int size_tcp;
    int i;
  
    printf("Got a packet\n");
    ether =(struct ethheader *)packet;
 
-   ip = (struct ipheader *)(packet + sizeof(struct ethheader));
+   ip = (struct ipheader *)(packet + SIZE_ETHERNET);
+   size_ip = IP_HL(ip*4);
       
    printf("    From: %s\n",inet_ntoa(ip->ip_src));
    printf("    To: %s\n", inet_ntoa(ip->ip_dst));
