@@ -75,29 +75,27 @@ void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *pa
  
    printf("Got a packet\n");
    ether =(struct ethheader *)packet;
- 
-   if(ntohs(ether->ether_type) == 0x800)
-   {
-       ip = (struct ipheader *)(packet + sizeof(struct ethheader));
+
+   ip = (struct ipheader *)(packet + sizeof(struct ethheader));
       
-       printf("    From: %s\n",inet_ntoa(ip->ip_src));
-       printf("    To: %s\n", inet_ntoa(ip->ip_dst));
- 
-       switch(ip->iph_protocol){
-           case IPPROTO_TCP:
-               printf("    Protocol is TCP\n");
-               break;
-           case IPPROTO_UDP:
-               printf("    Protocol is UDP\n");
-               break;
-           case IPPROTO_ICMP:
-               printf("    Protocol is ICMP\n");
-               return;
-           default:
-               printf("    Protocol other\n");
-               return;
-       }
+   printf("    From: %s\n",inet_ntoa(ip->ip_src));
+   printf("    To: %s\n", inet_ntoa(ip->ip_dst));
+
+   switch(ip->iph_protocol){
+   case IPPROTO_TCP:
+      printf("    Protocol is TCP\n");
+      break;
+   case IPPROTO_UDP:
+      printf("    Protocol is UDP\n");
+      break;
+   case IPPROTO_ICMP:
+      printf("    Protocol is ICMP\n");
+      return;
+   default:
+      printf("    Protocol other\n");
+      return;
    }
+   
  
    tcp = (struct sniff_tcp*)(packet + sizeof(struct ethheader) + sizeof(struct ipheader));
  
