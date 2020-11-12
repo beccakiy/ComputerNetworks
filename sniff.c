@@ -80,7 +80,6 @@ void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *pa
 
    ip = (struct ipheader *)(packet + SIZE_ETHERNET);
    size_ip = IP_HL(ip)*4;
-   
       
    printf("    From: %s\n",inet_ntoa(ip->ip_src));
    printf("    To: %s\n", inet_ntoa(ip->ip_dst));
