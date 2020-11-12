@@ -9,7 +9,7 @@ class part1_topo(Topo):
     
     def build(self):
         #Creates the custom topo
-        pass
+        #pass
         #Creates Hosts and Switches 
         switch1 = self.addSwitch('switch1')
         host1 = self.addHost('host1')
